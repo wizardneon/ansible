@@ -1,0 +1,42 @@
+---
+- name: install apache and open port hhtp
+  hosts: all
+  gather_facts: true
+  become: yes
+
+
+  tasks:
+
+  - name: install apache
+    yum: name=httpd state=latest
+
+
+
+  - name: Start Apache Webserver & Enable every boot
+    service: name=httpd state=started enabled=yes
+
+
+  - name: Creat file "Welcom"
+    copy:
+      dest: /var/www/html/index.html
+      content: Welcome to my web server
+      mode: 0755
+
+  - name: install firewalld
+    yum: name=firewalld state=latest
+ 
+  - name: start firewalld
+    systemd:
+      name: firewalld
+      state: reloaded
+  
+  - name: open port 80
+    firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+      immediate: true
+    vars:
+      ansible_python_interpreter: '/usr/bin/python2'
+
+

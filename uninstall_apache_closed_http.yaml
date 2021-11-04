@@ -1,0 +1,34 @@
+---
+- name: install apache and open port hhtp
+  hosts: all
+  gather_facts: true
+  become: yes
+
+
+  tasks:
+
+  - name: uninstall apache
+    yum: name=httpd state=absent
+
+  - name: Delete file "Welcom"
+    file:
+      path=/var/www/html/index.html state=absent
+
+  - name: install firewalld
+    yum: name=firewalld state=latest
+ 
+  - name: start firewalld
+    systemd:
+      name: firewalld
+      state: reloaded
+  
+  - name: closed port 80
+    firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: disabled
+    vars:
+      ansible_python_interpreter: '/usr/bin/python2'
+
+  - name: uninstall firewalld
+    yum: name=firewalld state=absent

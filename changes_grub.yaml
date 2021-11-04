@@ -1,0 +1,71 @@
+---
+- name: change grub file and started grub2-mkconfig
+  hosts: all
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars: 
+    insert_after: GRUB_CMDLINE_LINUX_DEFAULT="
+#  insert_after: GRUB_CMDLINE_LINUX_DEFAULT=" Данная переменная может отличаться для
+#  разных ОС  в данном случае AWS_Linux имеет такую строчку в файле GRUB, для другого 
+#  дистрибутива она может выглядить так insert_after: GRUB_CMDLINE_LINUX="
+    new_variables1: biosdevname=0
+    new_variables2: net.ifnames=0
+    bad_variables1: biosdevname=1
+    bad_variables2: net.ifnames=1
+
+
+
+  tasks:
+# Секция проверки файла
+  - name: Check vars '{{new_variables1}}' '{{new_variables2}}'
+    shell: cat /etc/default/grub 
+    register: var
+# Если все переменые присутсвуют в файле с верными значениями записывает сообщение об этом в перменую.
+  - name: Result check
+    shell: echo " Variable '{{new_variables1}}' '{{new_variables2}}'"
+    register: msg
+    when: "new_variables1 and new_variables2 in var.stdout"
+# Выводит сообщение о том что переменные найдены и их значения соответствуют необходимым.    
+  - name: Message
+    debug:
+      msg: "{{msg.stdout}} found!!  Values  compliance!!."  
+    when: "new_variables1 and new_variables2 in var.stdout"
+# Блок заменяет перменые с неверными значениеми 1 на значения 0 если в файле присутсвуют неверные переменные.  
+  - name: change variables1
+    replace:
+      path=/etc/default/grub
+      regexp='{{bad_variables1}}'
+      replace='{{new_variables1}}'
+    when: "bad_variables1 in var.stdout"
+
+  - name: change variables2 
+    replace:
+      path=/etc/default/grub
+      regexp='{{bad_variables2}}'
+      replace='{{new_variables2}}'
+    when: "bad_variables2 in var.stdout"
+# Блок добавляет переменные с верными значениями если в файле не найдены такие переменные
+
+  - name: add variables1
+    replace:
+      path=/etc/default/grub
+      regexp='{{insert_after}}'
+      replace='{{insert_after}}{{new_variables1}} '
+    when:
+        - "new_variables1 not in var.stdout"
+        - "bad_variables1 not in var.stdout"
+
+  - name: add variables2
+    replace:
+      path=/etc/default/grub
+      regexp='{{insert_after}}'
+      replace='{{insert_after}}{{new_variables2}} '
+    when:
+        - "new_variables2 not in var.stdout"
+        - "bad_variables2 not in var.stdout"
+# Блок запускает команду для пересборки файла конфигурации. Новая конфигурация будет применена при перезагрузке.
+  - name: Start grub2-mkconfig. Changing grub.cfg
+    shell: grub2-mkconfig -o /boot/grub2/grub.cfg
+  
