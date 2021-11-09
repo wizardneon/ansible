@@ -1,5 +1,5 @@
 ---
-- name: Adding users, adding group. Password encrypt.
+- name: Adding users, adding group. Password encrypt..
   hosts: all
   gather_facts: true
   become: yes
