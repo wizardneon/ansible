@@ -1,0 +1,38 @@
+---
+- name: Adding users, adding group. Password encrypt.
+  hosts: all
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars: 
+    user1: Alice
+    user2: Bob
+    user3: Carol
+    group: Develop
+    mail: "@example.com"
+    password: $6$XtStc0v0PEyapVuK$3hIo8lt14lom6Idf2qxcnaSO1GooYB.zHAQhhmyFzfS7Yq/vlKoMsjYkP2bdM38f8TczTNIlD3/8J4rP0h8EA.
+
+
+  tasks:
+
+  - name: Checking presence group "{{group}}"
+    ansible.builtin.group:
+      name: '{{group}}'
+      state: present
+
+  - name: Adding user to {{group}}, creating a password, creating a home directory...  
+    ansible.builtin.user:
+      name: '{{item}}'
+      password: "{{password}}"
+      comment: "{{item}}{{mail}}"
+      group: '{{group}}'
+      create_home: yes
+      home: '/home/{{item}}'
+    with_items: 
+      - '{{user1}}'
+      - '{{user2}}'
+      - '{{user3}}'
+
+
+
