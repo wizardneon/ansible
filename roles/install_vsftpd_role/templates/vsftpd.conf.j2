@@ -1,0 +1,88 @@
+# Vsftpd configuration
+# Managed by Ansible, don't edit manually
+
+#
+# General settings
+#
+
+connect_from_port_20={{ 'YES' if vsftpd_connect_from_port_20 else 'NO' }}
+
+listen={{ 'YES' if vsftpd_listen else 'NO' }}
+
+listen_ipv6={{ 'YES' if vsftpd_listen_ipv6 else 'NO' }}
+
+pam_service_name={{ vsftpd_service }}
+
+syslog_enable={{ 'YES' if vsftpd_syslog_enable else 'NO' }}
+
+pasv_enable={{ 'YES' if vsftpd_pasv_enable else 'NO' }}
+
+# Access control for anonymous users
+
+anonymous_enable={{ 'YES' if vsftpd_anonymous_enable else 'NO' }}
+{% if vsftpd_anon_root is defined %}
+
+anon_root={{ vsftpd_anon_root }}
+{% endif %}
+
+#
+# Access control for registered users
+#
+local_enable={{ 'YES' if vsftpd_local_enable else 'NO' }}
+{% if vsftpd_local_root is defined %}
+
+local_root={{ vsftpd_local_root }}
+{% endif %}
+
+local_umask={{ vsftpd_local_umask }}
+
+anon_umask={{ vsftpd_anon_umask }}
+
+allow_writeable_chroot={{ 'YES' if vsftpd_allow_writeable_chroot else 'NO' }}
+
+anon_upload_enable={{ 'YES' if vsftpd_anon_upload_enable else 'NO' }}
+
+anon_mkdir_write_enable={{ 'YES' if vsftpd_anon_mkdir_write_enable else 'NO' }}
+
+anon_other_write_enable={{ 'YES' if vsftpd_anon_other_write_enable else 'NO' }}
+
+guest_enable={{ 'YES' if vsftpd_guest_enable else 'NO' }}
+
+chroot_list_enable={{ 'YES' if vsftpd_chroot_list_enable else 'NO' }}
+
+chown_uploads={{ 'YES' if vsftpd_chown_uploads else 'NO' }}
+
+ascii_upload_enable={{ 'YES' if vsftpd_ascii_upload_enable else 'NO' }}
+
+ascii_download_enable={{ 'YES' if vsftpd_ascii_download_enable else 'NO' }}
+
+no_anon_password={{ 'YES' if vsftpd_no_anon_password else 'NO' }}
+
+hide_ids={{ 'YES' if vsftpd_hide_ids else 'NO' }}
+
+virtual_use_local_privs={{ 'YES' if vsftpd_virtual_use_local_privs else 'NO' }}
+
+pam_service_name={{vsftpd_pam_service_name}}
+
+pasv_promiscuous={{ 'YES' if vsftpd_pasv_promiscuous else 'NO' }}
+
+write_enable={{ 'YES' if vsftpd_write_enable else 'NO' }}
+{% if not (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6') %}
+seccomp_sandbox=NO
+{% endif %}
+
+# Addres & Port
+
+pasv_min_port={{vsftpd_pasv_min_port}} 
+
+pasv_max_port={{vsftpd_pasv_max_port}}
+
+pasv_address={{vsftpd_pasv_address}}
+{% if vsftpd_options is defined %}
+#
+# Other settings
+#
+{% for setting in vsftpd_options %}
+{{ setting.key }}={{ setting.value }}
+{% endfor %}
+{% endif %}

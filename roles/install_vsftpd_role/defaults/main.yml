@@ -1,0 +1,35 @@
+---
+
+vsftpd_anonymous_enable: YES
+vsftpd_anon_upload_enable: YES
+vsftpd_no_anon_password: YES
+vsftpd_connect_from_port_20: YES
+vsftpd_group: ftp
+vsftpd_listen: YES
+vsftpd_listen_ipv6: false
+vsftpd_local_enable: YES
+vsftpd_local_umask: '022'
+vsftpd_anon_umask: '077'
+vsftpd_mode: '0555'
+vsftpd_upload_mode: '0777'
+vsftpd_owner: ftp
+vsftpd_setype: public_content_rw_t
+vsftpd_syslog_enable: YES
+vsftpd_write_enable: YES
+vsftpd_pasv_enable: YES
+vsftpd_pasv_min_port : '1024'
+vsftpd_pasv_max_port : '1048' 
+vsftpd_pasv_address : "{{ansible_ec2_public_ipv4}}"  # Change your public ip (aws)
+vsftpd_anon_mkdir_write_enable: YES
+vsftpd_anon_root: '/var/ftp/pub'
+vsftpd_allow_writeable_chroot: YES
+vsftpd_guest_enable: NO
+vsftpd_chroot_list_enable: YES
+vsftpd_chown_uploads: YES
+vsftpd_ascii_upload_enable: NO
+vsftpd_ascii_download_enable: NO
+vsftpd_anon_other_write_enable: YES
+vsftpd_hide_ids: YES
+vsftpd_virtual_use_local_privs: YES
+vsftpd_pam_service_name: vsftpd
+vsftpd_pasv_promiscuous: YES

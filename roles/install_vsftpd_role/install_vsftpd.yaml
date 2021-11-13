@@ -1,0 +1,16 @@
+---
+- name: install Vsftpd
+  hosts: all
+  gather_facts: true
+  become: yes
+  become_method: sudo
+  become_user: root
+
+
+  roles: 
+      - install_vsftpd_role
+
+
+
+
+      
