@@ -1,0 +1,7 @@
+
+
+
+
+               #Dependencies:
+
+#  ansible-galaxy collection install amazon.aws
